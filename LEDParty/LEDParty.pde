@@ -3,7 +3,6 @@
   * and an LED display screen which lights up according 
   * to beats in music 
   */
-
 import processing.serial.*;
 import ddf.minim.*;
 import ddf.minim.analysis.*;
@@ -16,8 +15,8 @@ BeatListener bl;
 Arduino arduino;
 
 int ledPin =  12;    // LED connected to digital pin 12
-int ledPin2 =  8;    // LED connected to digital pin 1
-int ledPin3 =  2;    // LED connected to digital pin 0
+int ledPin2 =  8;    // LED connected to digital pin 8
+int ledPin3 =  2;    // LED connected to digital pin 2
 
 float snareHeight, kickHeight, hatHeight;
 float kickSize, snareSize, hatSize;
@@ -30,25 +29,19 @@ void setup() {
   
   song = minim.loadFile("sample1.mp3", 2048);
   song.play();
-  // a beat detection object that is FREQ_ENERGY mode that 
-  // expects buffers the length of song's buffer size
-  // and samples captured at songs's sample rate
+  
+  // set buffer size and sample rate according to the input song
   beat = new BeatDetect(song.bufferSize(), song.sampleRate());
-  // set the sensitivity to 300 milliseconds
-  // After a beat has been detected, the algorithm will wait for 300 milliseconds 
-  // before allowing another beat to be reported. You can use this to dampen the 
-  // algorithm if it is giving too many false-positives. The default value is 10, 
-  // which is essentially no damping. If you try to set the sensitivity to a negative value, 
-  // an error will be reported and it will be set to 10 instead. 
   beat.setSensitivity(100);  
+  
+  //GUI initializations
   kickSize = snareSize = hatSize = 16;
   snareHeight = kickHeight = hatHeight = height/2;
-  // make a new beat listener, so that we won't miss any buffers for the analysis
   bl = new BeatListener(beat, song);  
   textFont(createFont("Helvetica", 16));
   textAlign(CENTER);
   
-  arduino.pinMode(ledPin, Arduino.OUTPUT);    
+  arduino.pinMode(ledPin, Arduino.OUTPUT);    // set the arduino led's to output
   arduino.pinMode(ledPin2, Arduino.OUTPUT);  
   arduino.pinMode(ledPin3, Arduino.OUTPUT);  
 }
@@ -74,6 +67,8 @@ void draw() {
   arduino.digitalWrite(ledPin, Arduino.LOW);    // set the LED off
   arduino.digitalWrite(ledPin2, Arduino.LOW);    // set the LED off
   arduino.digitalWrite(ledPin3, Arduino.LOW);    // set the LED off
+  
+  // changing the textsize and position of text on gui for easier visualization
   textSize(kickSize);
   fill(255,217,0);
   text("KICK", width/4, height/2);
